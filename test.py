@@ -1,11 +1,20 @@
 import scipy as sp
 from PIL import Image, ImageDraw
 
-A = sp.random.randint(2, size=(4, 4))
-m = sp.size(A, 0)
-n = sp.size(A, 1)
-print(A)
-s = 10
+fsize = 100
+s = 20
+A = sp.random.randint(2, size=(fsize))
+
+m = int(round(sp.sqrt(fsize)*0.84/3)*3)
+n = int(round(fsize/m/4)*4)
+
+m_left = round((2480-m*s)/2)
+m_top = round((3508-n*s)/2)
+
+h_size = m/3
+v_size = n/4
+
+C = sp.arange(0, fsize, 1)
 
 
 def line(im, value, x, y, size, width):
@@ -17,14 +26,23 @@ def line(im, value, x, y, size, width):
 
 
 def draw_matrix(im, M):
-    for i in range(m):
-        for j in range(n):
-            line(im, M[i, j], s*i, s*j, s, 2)
+    for i in range(n):
+        for j in range(m):
+            line(im, M[i, j], s*j+m_left, s*i+m_top, s, 2)
 
 
-img = Image.new("L", (s*m, s*n))
+def mix(M):
+    T = sp.zeros((n, m))
+    for i in range(fsize):
+        T[(i//12)//h_size+(i%12)//3*v_size, (i//12)%h_size+i%3*h_size] = M[i]
+    return T
+
+
+
+img = Image.new("L", (2480, 3508))
 d = ImageDraw.Draw(img)
 d.rectangle([(0, 0), img.size], fill=255)
-
-draw_matrix(img, A)
+B = mix(A)
+print(B)
+draw_matrix(img, B)
 img.save("/home/mm/test/1.png")
