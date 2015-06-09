@@ -1,4 +1,6 @@
 import picture
+import cv2
+import border
 
 
 f = "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut pharetra lacinia " \
@@ -11,8 +13,11 @@ f = "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inc
     "tincidunt at. Cras a ipsum ex. Duis malesuada vulputate libero, et eleifend libero."
 
 
-picture.draw(f, 300)
+#picture.draw(f, 300)
 
 text = picture.decode("1.png")
 
 print(text)
+
+#border.rotate("4.png")
+

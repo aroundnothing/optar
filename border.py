@@ -1,5 +1,7 @@
 import cv2
 import scipy as sp
+from math import atan, degrees
+
 
 
 def find(image):
@@ -19,4 +21,24 @@ def find(image):
     c = sorted(cnts, key=cv2.contourArea, reverse=True)[0]
 
     rect = cv2.minAreaRect(c)
+
+    #box = sp.int0(cv2.cv.BoxPoints(rect))
+    #cv2.drawContours(image, [box], -1, (0, 255, 0), 3)
+    #cv2.imshow("Image", image)
+    #cv2.waitKey(0)
+
     return sp.int0(cv2.cv.BoxPoints(rect))
+
+
+def rotate(file_name):
+    box = find(file_name)
+    m = sp.argmin(box, 0)
+
+    img = cv2.imread(file_name, 0)
+    rows, cols = img.shape
+
+    angle = degrees(atan(float((box[m[0]+1, 0] - box[m[0], 0]))/(box[m[1]-1, 1] - box[m[1], 1])))
+    M = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
+    dst = cv2.warpAffine(img, M, (cols, rows))
+    cv2.imwrite("temp.png", dst)
+

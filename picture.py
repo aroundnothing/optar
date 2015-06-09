@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw
 import scipy as sp
 import hamming
-import period
+from scipy.signal import argrelmax
 import border
 import mix
 import recognize as rec
@@ -60,14 +60,16 @@ def array_to_str(array):
 
 
 def decode(file_name):
-    image = Image.open(file_name)
+    border.rotate(file_name)
+    image = Image.open("temp.png")
     pix = image.load()
     q = border.find(file_name)
     m_left = q[1, 0] + 1
     m_top = q[1, 1] + 1
 
     h_sum = sp.sum(image, 0)
-    s = int(round(period.find(h_sum)))
+    m = argrelmax(sp.correlate(h_sum, h_sum, 'same'))
+    s = int(round(sp.average(sp.diff(m))))
     m = (q[2, 0]-q[1, 0])/s
     n = (q[0, 1]-q[1, 1])/s
 
