@@ -1,4 +1,5 @@
 import scipy as sp
+from PIL import Image
 
 
 def get_value(image, x, y, size):
@@ -32,18 +33,3 @@ def matrix(image, x, y, size, width, height):
             v[i, j] = get_value(image, x + j * size, y + i * size, size)
 
     return v
-
-
-def matrix_size(image):
-    a = sp.array(image)
-    v = a.min(axis=0)
-    h = a.min(axis=1)
-    w = 0
-    for i in range(1, len(v)):
-        if v[i - 1] > 150 + v[i]:
-            w += 1
-    b = 0
-    for i in range(1, len(h)):
-        if h[i - 1] > 150 + h[i]:
-            b += 1
-    return w, b

@@ -6,6 +6,16 @@ tr_matrix = sp.array([[1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
                       [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]])
 
 
+def str_to_bin(string):
+    return "".join(["{0:08b}".format(x) for x in bytearray(string)])
+
+
+def bin_to_str(string):
+    binaries = [string[8*i:8*i+8] for i in xrange(len(string)//8)]
+    decimals = [int(x, 2) for x in binaries]
+    return str(bytearray(decimals))
+
+
 def str_to_list_8(string, k):
     st = []
     for i in range(k):
@@ -43,7 +53,7 @@ def str_to_list_12(string, k):
 def encode(string):
 
     for i in range(8 - len(string) % 8):
-        string = "0" + string
+        string += "0"
 
     k = int(len(string) / 8)
     st = str_to_list_8(string, k)
