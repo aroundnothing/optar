@@ -5,9 +5,10 @@ from scipy.signal import argrelmax
 import border
 import mix
 import recognize as rec
+import PIL
 
 
-def draw(string, dpi):
+def draw(string, dpi, file_name):
     binary_str = hamming.encode(hamming.str_to_bin(string))
     mm = dpi / 25.4
     s = int(2*mm)
@@ -32,7 +33,7 @@ def draw(string, dpi):
     d.line([(m_left+s*m, m_top), (m_left+s*m, m_top+s*n)], fill=0, width=w)
     d.line([(m_left, m_top+s*n), (m_left+s*m, m_top+s*n)], fill=0, width=w)
     draw_matrix(img, B, m_left, m_top, s, mm)
-    img.save("1.png")
+    img.save(file_name)
 
 
 def line(image, value, x, y, size, width, m):
@@ -62,19 +63,25 @@ def array_to_str(array):
 def decode(file_name):
     border.rotate(file_name)
     image = Image.open("temp.png")
-    pix = image.load()
-    q = border.find(file_name)
-    m_left = q[1, 0] + 1
-    m_top = q[1, 1] + 1
+    q = border.find("temp.png")
+    ind = sp.argmin(sp.sum(q, 1), 0)
+    up_left = q[ind, 0] + 2
+    up_top = q[ind, 1] + 2
+    d_right = q[ind+1, 0] - 3
+    d_bottom = q[ind-1, 1] - 3
 
     h_sum = sp.sum(image, 0)
     m = argrelmax(sp.correlate(h_sum, h_sum, 'same'))
-    s = int(round(sp.average(sp.diff(m))))
-    m = (q[2, 0]-q[1, 0])/s
-    n = (q[0, 1]-q[1, 1])/s
-
-    matrix = mix.off(rec.matrix(pix, m_left, m_top, s, m, n))
-
+    s = sp.average(sp.diff(m))
+    m = int(round(d_right - up_left)/s)
+    n = int(round(d_bottom - up_top)/s)
+    s = int(round(s))+1
+    box = (up_left, up_top, d_right, d_bottom)
+    region = image.crop(box)
+    region = region.resize((s*m, s*n), PIL.Image.ANTIALIAS)
+    region.save("0.png")
+    pix = region.load()
+    matrix = mix.off(rec.matrix(pix, s, m, n))
     str2 = hamming.decode(array_to_str(matrix))
 
     return hamming.bin_to_str(str2)

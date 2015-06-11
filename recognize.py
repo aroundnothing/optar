@@ -1,5 +1,4 @@
 import scipy as sp
-from PIL import Image
 
 
 def get_value(image, x, y, size):
@@ -26,10 +25,9 @@ def get_value(image, x, y, size):
         return 1
 
 
-def matrix(image, x, y, size, width, height):
+def matrix(image, size, width, height):
     v = sp.zeros((height, width))
     for i in range(height):
         for j in range(width):
-            v[i, j] = get_value(image, x + j * size, y + i * size, size)
-
+            v[i, j] = get_value(image, j * size, i * size, size)
     return v
