@@ -33,6 +33,7 @@ def draw(string, dpi, file_name):
     d.line([(m_left+s*m, m_top), (m_left+s*m, m_top+s*n)], fill=0, width=w)
     d.line([(m_left, m_top+s*n), (m_left+s*m, m_top+s*n)], fill=0, width=w)
     draw_matrix(img, B, m_left, m_top, s, mm)
+    print(m_left, m_top, s, m, n)
     img.save(file_name)
 
 
@@ -74,13 +75,18 @@ def decode(file_name):
     m = argrelmax(sp.correlate(h_sum, h_sum, 'same'))
     s = sp.average(sp.diff(m))
     m = int(round(d_right - up_left)/s)
+    if m % 3 != 0:
+        m += 3 - m % 3
     n = int(round(d_bottom - up_top)/s)
+    if n % 4 != 0:
+        n += 4 - n % 4
     s = int(round(s))+1
     box = (up_left, up_top, d_right, d_bottom)
     region = image.crop(box)
     region = region.resize((s*m, s*n), PIL.Image.ANTIALIAS)
     region.save("0.png")
     pix = region.load()
+    print(up_left, up_top, s, m, n, 3%3, n%4)
     matrix = mix.off(rec.matrix(pix, s, m, n))
     str2 = hamming.decode(array_to_str(matrix))
 
