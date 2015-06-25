@@ -10,13 +10,13 @@ def get_value(image, x, y, size):
     a = 0
     for i in range(y, y + size):
         for j in range(x, x + size):
-            if image[j, i] < 100:
+            if image[j, i] < 50:
                 sum_xy += i * j
                 sum_x += j
                 sum_y += i
                 sum_x2 += j * j
                 k += 1
-    if k != 0:
+    if k > 3:
         a = (k * sum_xy - sum_x * sum_y) / (k * sum_x2 - sum_x * sum_x)
 
     if 0 <= a <= 1:

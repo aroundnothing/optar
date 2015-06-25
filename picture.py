@@ -26,7 +26,7 @@ def draw(string, dpi, file_name):
     img = Image.new("L", (c_width, c_height))
     d = ImageDraw.Draw(img)
     d.rectangle([(0, 0), img.size], fill=255)
-    d.rectangle([(int(m_left/4), int(m_top/4)), (int(m_left/4)+int(m_top/2), int(m_top/4)+int(m_top/2))], fill=0)
+    d.rectangle([(int(m_left/4), int(m_top/4)), (int(m_left/4)+10*mm, int(m_top/4)+10*mm)], fill=0)
     w = 1
     d.line([(m_left, m_top), (m_left+s*m, m_top)], fill=0, width=w)
     d.line([(m_left, m_top), (m_left, m_top+s*n)], fill=0, width=w)
@@ -70,7 +70,9 @@ def decode(file_name):
     d_right = q[ind+1, 0] - 3
     d_bottom = q[ind-1, 1] - 3
 
-    h_sum = sp.sum(image, 0)
+    box = (up_left, up_top, d_right, d_bottom)
+    region = image.crop(box)
+    h_sum = sp.sum(region, 0)
     m = argrelmax(sp.correlate(h_sum, h_sum, 'same'))
     s = sp.average(sp.diff(m))
     m = int(round(d_right - up_left)/s)
@@ -80,8 +82,7 @@ def decode(file_name):
     if n % 4 != 0:
         n += 4 - n % 4
     s = int(round(s))+1
-    box = (up_left, up_top, d_right, d_bottom)
-    region = image.crop(box)
+
     region = region.resize((s*m, s*n), PIL.Image.ANTIALIAS)
     region.save("0.png")
     pix = region.load()

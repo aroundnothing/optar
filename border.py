@@ -16,6 +16,7 @@ def find(image):
 
     gradient = cv2.subtract(gradx, grady)
     gradient = cv2.convertScaleAbs(gradient)
+    cv2.imwrite("grad.png", gradient)
 
     (cnts, _) = cv2.findContours(gradient.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     c = sorted(cnts, key=cv2.contourArea, reverse=True)[0]
